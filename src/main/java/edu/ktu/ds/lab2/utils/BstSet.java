@@ -334,6 +334,7 @@ public class BstSet<E extends Comparable<E>> implements SortedSet<E>, Cloneable 
         BstNode<E> clone = new BstNode<>(node.element);
         clone.left = cloneRecursive(node.left);
         clone.right = cloneRecursive(node.right);
+
         return clone;
     }
 
@@ -345,7 +346,30 @@ public class BstSet<E extends Comparable<E>> implements SortedSet<E>, Cloneable 
      */
     @Override
     public Set<E> headSet(E element) {
-        throw new UnsupportedOperationException("Studentams reikia realizuoti headSet()");
+        if(element == null || root == null){
+            return null;
+        }
+
+        BstSet<E> subset = new BstSet<E>();
+        BstNode<E> currentBranch = root;
+        BstNode<E> elementBranch = null;
+
+        while (currentBranch != null) {
+            int cmp = c.compare(element, currentBranch.element);
+            if (cmp < 0) {
+                currentBranch = currentBranch.left;
+            } else if (cmp > 0) {
+                currentBranch = currentBranch.right;
+            }
+
+            else {
+                elementBranch = currentBranch;
+                currentBranch = null;
+            }
+        }
+
+        subset.root = cloneRecursive(elementBranch.left);
+        return subset;
     }
 
     /**
@@ -357,7 +381,54 @@ public class BstSet<E extends Comparable<E>> implements SortedSet<E>, Cloneable 
      */
     @Override
     public Set<E> subSet(E element1, E element2) {
-        throw new UnsupportedOperationException("Studentams reikia realizuoti subSet()");
+        if(element1 == null || element2 == null || root == null){
+            return null;
+        }
+
+        Set<E> subset = new BstSet<E>();
+        BstNode<E> currentBranch = root;
+        BstNode<E> element1Branch = null;
+
+        while (currentBranch != null) {
+            int cmp = c.compare(element1, currentBranch.element);
+            if (cmp < 0) {
+                currentBranch = currentBranch.left;
+            } else if (cmp > 0) {
+                currentBranch = currentBranch.right;
+            }
+
+            else {
+                element1Branch = currentBranch;
+                currentBranch = null;
+            }
+        }
+
+        if(element1Branch == null){
+            throw new UnsupportedOperationException("1-asis elementas nerastas!");
+        }
+
+        boolean flagFound = false;
+        while (element1Branch != null) {
+            int cmp = c.compare(element2, element1Branch.element);
+            if (cmp < 0) {
+                subset.add(element1Branch.element);
+                element1Branch = element1Branch.left;
+            } else if (cmp > 0) {
+                subset.add(element1Branch.element);
+                element1Branch = element1Branch.right;
+            }
+            else if (cmp == 0) {
+                subset.add(element1Branch.element);
+                flagFound = true;
+                element1Branch = null;
+            }
+        }
+
+        if (flagFound)
+            return subset;
+
+        else
+            throw new UnsupportedOperationException("Nepavyko sudaryti poaibio tarp 1 ir 2 elementu!");
     }
 
     /**
