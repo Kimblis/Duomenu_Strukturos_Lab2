@@ -439,7 +439,29 @@ public class BstSet<E extends Comparable<E>> implements SortedSet<E>, Cloneable 
      */
     @Override
     public Set<E> tailSet(E element) {
-        throw new UnsupportedOperationException("Studentams reikia realizuoti tailSet()");
+        if(element == null || root == null){
+            return null;
+        }
+
+        BstSet<E> subset = new BstSet<E>();
+        BstNode<E> currentBranch = root;
+        BstNode<E> elementBranch = null;
+
+        while (currentBranch != null) {
+            int cmp = c.compare(element, currentBranch.element);
+            if (cmp < 0) {
+                currentBranch = currentBranch.left;
+            } else if (cmp > 0) {
+                currentBranch = currentBranch.right;
+            }
+            else {
+                elementBranch = currentBranch;
+                currentBranch = null;
+            }
+        }
+
+        subset.root = cloneRecursive(elementBranch.right);
+        return subset;
     }
 
     /**
