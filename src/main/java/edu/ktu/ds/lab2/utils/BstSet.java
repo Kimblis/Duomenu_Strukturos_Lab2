@@ -157,7 +157,11 @@ public class BstSet<E extends Comparable<E>> implements SortedSet<E>, Cloneable 
      */
     @Override
     public void remove(E element) {
-        throw new UnsupportedOperationException("Studentams reikia realizuoti remove(E element)");
+        if (element == null) {
+            throw new IllegalArgumentException("Element to remove can not be null");
+        }
+
+        root = removeRecursive(element, root);
     }
 
     /**
@@ -171,7 +175,38 @@ public class BstSet<E extends Comparable<E>> implements SortedSet<E>, Cloneable 
     }
 
     private BstNode<E> removeRecursive(E element, BstNode<E> node) {
-        throw new UnsupportedOperationException("Studentams reikia realizuoti removeRecursive(E element, BstNode<E> n)");
+        if (node == null) {
+            return node;
+        }
+        // Medyje ieškomas šalinamas elemento mazgas;
+        int cmp = c.compare(element, node.element);
+
+        if (cmp < 0) {
+            node.left = removeRecursive(element, node.left);
+        } else if (cmp > 0) {
+            node.right = removeRecursive(element, node.right);
+        } else if (node.left != null && node.right != null) {
+            /* Atvejis kai šalinamas elemento mazgas turi abu child nodes.
+             Ieškomas didžiausio rakto elemento mazgas kairiajame pomedyje.
+             */
+            BstNode<E> nodeMax = getMax(node.left);
+
+            /* Didžiausio rakto elementas (TIK DUOMENYS!) perkeliamas į šalinamo
+             elemento mazgą. Pats mazgas nėra pašalinamas - tik atnaujinamas;
+             */
+            node.element = nodeMax.element;
+
+            // Surandamas ir pašalinamas maksimalaus rakto elemento mazgas;
+            node.left = removeMax(node.left);
+            size--;
+
+            // Kiti atvejai
+        } else {
+            node = (node.left != null) ? node.left : node.right;
+            size--;
+        }
+
+        return node;
     }
 
     private E get(E element) {
